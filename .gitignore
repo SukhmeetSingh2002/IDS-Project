@@ -160,5 +160,10 @@ cython_debug/
 #.idea/
 
 
+# custom
 *.csv
 .vscode/
+
+*.h5
+*.keras
+plots/
