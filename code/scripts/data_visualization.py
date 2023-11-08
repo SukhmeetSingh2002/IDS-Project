@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.metrics import confusion_matrix, roc_curve, auc
 
 def plot_training_history(history, model_name):
@@ -30,19 +31,18 @@ def plot_training_history(history, model_name):
 
 def plot_confusion_matrix(y_true, y_pred, model_name):
     cm = confusion_matrix(y_true, y_pred)
-    plt.figure(figsize=(8, 6))
-    plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+    plt.figure(figsize=(5, 5))
+    sns.heatmap(cm, annot=True, fmt="d")
     plt.title(f'{model_name} Confusion Matrix')
-    plt.colorbar()
-    tick_marks = range(len(y_true.unique()))
-    plt.xticks(tick_marks, y_true.unique(), rotation=45)
-    plt.yticks(tick_marks, y_true.unique())
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
-    plt.show()
+    
 
     # save the plot
     plt.savefig(f'plots/{model_name}_confusion_matrix.png')
+
+
+    plt.show()
 
 def plot_roc_curve(y_true, y_pred, model_name):
     fpr, tpr, thresholds = roc_curve(y_true, y_pred)
