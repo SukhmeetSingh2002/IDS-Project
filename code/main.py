@@ -2,7 +2,10 @@ import numpy as np
 
 from data.data_loading import load_dataset
 from data.data_preprocessing import preprocess_data, standardize_data
-from data.data_splitting import split_dataset, oversample_data, split_dataset_testing, upsample_data, calculate_class_weights, downsample_data
+from data.data_splitting import split_dataset, oversample_data, split_dataset_testing, upsample_data, calculate_class_weights, downsample_data, label_encode, to_categorical_label_encode
+
+import warnings
+warnings.filterwarnings("ignore")
 
 from models.models import (
     get_ann_model, train_ann_model, predict_ann, evaluate_model,
@@ -18,15 +21,32 @@ if __name__ == "__main__":
     df_training, df_testing = load_dataset(FILE_PATH_TRAINING, FILE_PATH_TESTING)
     
     # Data preprocessing
-    df_training = preprocess_data(df_training)
-    df_testing = preprocess_data(df_testing)
+    df_training = preprocess_data(df_training, multi_class=True)
+    df_testing = preprocess_data(df_testing, multi_class=True)
     
     # Data standardization
     df_training, df_testing = standardize_data(df_training, df_testing)
     
+    # label encode
+    df_training, df_testing = label_encode(df_training, df_testing, multi_class=True)
+
     # Data splitting
-    X_train, X_val, y_train, y_val = split_dataset(df_training)
-    X_test, y_test = split_dataset_testing(df_testing)
+    X_train, X_val, y_train, y_val = split_dataset(df_training, multi_class=True)
+    X_test, y_test = split_dataset_testing(df_testing, multi_class=True)
+
+    # Oversampling
+    # X_train_oversampled, y_train_oversampled = oversample_data(X_train, y_train)
+
+    X_train_oversampled, y_train_oversampled = upsample_data(X_train, y_train, multi_class=True)
+    # X_train_oversampled, y_train_oversampled = downsample_data(X_train, y_train)
+    
+    X_train, y_train = X_train_oversampled, y_train_oversampled
+
+
+    # to categorical
+    y_train = to_categorical_label_encode(y_train)
+    y_val = to_categorical_label_encode(y_val)
+    y_test_one_hot = to_categorical_label_encode(y_test)
 
     # print shape of data
     print(f"X_train shape: {X_train.shape}")
@@ -35,22 +55,7 @@ if __name__ == "__main__":
     print(f"y_val shape: {y_val.shape}")
     print(f"X_test shape: {X_test.shape}")
     print(f"y_test shape: {y_test.shape}")
-    
-    # Oversampling
-    # X_train_oversampled, y_train_oversampled = oversample_data(X_train, y_train)
 
-    # X_train_oversampled, y_train_oversampled = upsample_data(X_train, y_train)
-    # X_train_oversampled, y_train_oversampled = downsample_data(X_train, y_train)
-    
-    # X_train, y_train = X_train_oversampled, y_train_oversampled
-
-    # print shape of data
-    # print(f"X_train shape: {X_train.shape}")
-    # print(f"y_train shape: {y_train.shape}")
-    # print(f"X_val shape: {X_val.shape}")
-    # print(f"y_val shape: {y_val.shape}")
-    # print(f"X_test shape: {X_test.shape}")
-    # print(f"y_test shape: {y_test.shape}")
 
     # class weights
     # class_weights = calculate_class_weights(y_train)
@@ -69,15 +74,17 @@ if __name__ == "__main__":
     
     # Make predictions and evaluate
     y_prediction_ann = predict_ann(ann_model, X_test)
-    evaluate_model(ann_model, X_test, y_test)
+    evaluate_model(ann_model, X_test, y_test_one_hot)
 
 
     ############ Random Forest ############
     rf = MyRandomForestClassifier(n_estimators=100, max_depth=100, random_state=42)
     rf.fit(X_train, y_train)
     y_prediction_rf = rf.predict(X_test)
-    rf.evaluate(X_test, y_test)
-    y_prediction_rf = np.round(y_prediction_rf)
+    y_prediction_rf = np.argmax(y_prediction_rf, axis=1)
+
+    print("y_prediction_rf",y_prediction_rf.shape)
+    print("y_test",y_test.shape)
 
     # calulate accuracy using y_prediction_rf
     from sklearn.metrics import accuracy_score

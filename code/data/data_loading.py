@@ -1,8 +1,8 @@
 import pandas as pd
 
 def load_dataset(training_file, testing_file):
-    df_training = pd.read_csv(training_file)
-    df_testing = pd.read_csv(testing_file)
+    df_training = pd.read_csv(training_file, index_col=0)
+    df_testing = pd.read_csv(testing_file, index_col=0)
     return df_training, df_testing
 
 # plot id vs label
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     FILE_PATH_TESTING = "../dataset/UNSW_NB15_testing-set.csv"
     df_training, df_testing = load_dataset(FILE_PATH_TRAINING, FILE_PATH_TESTING)
     
-    # print(df_training.head())
+    print(df_training.head())
     # print(df_testing.head())
     # print(df_training.shape, df_testing.shape)
     print(df_training['attack_cat'].value_counts()) # 10 classes

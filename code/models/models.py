@@ -55,7 +55,7 @@ class MyRandomForestClassifier:
         self.max_depth = max_depth
         self.random_state = random_state
         self.model = None
-        self.n_jobs = 50
+        self.n_jobs = 70
 
     def fit(self, X_train, y_train):
         self.model = RandomForestClassifier(n_estimators=self.n_estimators, max_depth=self.max_depth, random_state=self.random_state, n_jobs=self.n_jobs)
@@ -82,24 +82,43 @@ METRICS = [
 ]
 
 
+# def get_ann_model(input_dim):
+#     model = Sequential()
+#     model.add(Dense(100, input_dim=input_dim, activation='relu'))
+#     model.add(BatchNormalization())
+#     model.add(Dropout(0.5))
+#     model.add(Dense(75, activation='relu'))
+#     model.add(BatchNormalization())
+#     model.add(Dropout(0.5))
+#     model.add(Dense(50, activation='relu'))
+#     model.add(Dropout(0.5))
+#     model.add(Dense(1, activation='sigmoid'))
+    
+#     # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+#     model.compile(loss=lambda y_true, y_pred: custom_weighted_loss(y_true, y_pred, class_weights), optimizer='adam', metrics=[f1_m, 'accuracy'])
+#     return model
+
+# multi-class 10 classes
 def get_ann_model(input_dim):
     model = Sequential()
     model.add(Dense(100, input_dim=input_dim, activation='relu'))
-    model.add(BatchNormalization())
+    # model.add(BatchNormalization())
     model.add(Dropout(0.5))
     model.add(Dense(75, activation='relu'))
-    model.add(BatchNormalization())
+    # model.add(BatchNormalization())
     model.add(Dropout(0.5))
     model.add(Dense(50, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(1, activation='sigmoid'))
+    model.add(Dense(10, activation='softmax'))
     
-    # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-    model.compile(loss=lambda y_true, y_pred: custom_weighted_loss(y_true, y_pred, class_weights), optimizer='adam', metrics=[f1_m, 'accuracy'])
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=[f1_m, 'accuracy', precision_m, recall_m])
     return model
 
 def train_ann_model(model, X_train, y_train, X_val, y_val, class_weights=None):
-    history_ann = model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=10, batch_size=3000)
+    if class_weights is None:
+        history_ann = model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=50, batch_size=3000)
+    else:
+        history_ann = model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=50, batch_size=3000, class_weight=class_weights)
     return model, history_ann
 
 def predict_ann(model, X_test):
@@ -169,6 +188,8 @@ def load_lstm_model(model_file):
 def evaluate_model(model, X_test, y_test):
     accuracy = model.evaluate(X_test, y_test)
     print(f"Accuracy: {accuracy}%")
+
+    accuracy = 10.123456789
 
 
     # save the model to disk

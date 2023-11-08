@@ -39,11 +39,12 @@ def label_encode(df, columns):
 
 def preprocess_data(df, multi_class=False):
     one_hot_encode_cols = ['proto','state','service']
-    columns_to_remove = ['id','attack_cat']
+    columns_to_remove = ['attack_cat']
     if multi_class:
         columns_to_remove.remove('attack_cat')
         columns_to_remove.append('label')
     remaining_columns = [column for column in df.columns if column not in columns_to_remove and column not in one_hot_encode_cols]
+
 
 
     df = remove_columns(df, columns_to_remove)
