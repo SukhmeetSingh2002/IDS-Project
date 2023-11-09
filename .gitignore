@@ -164,7 +164,9 @@ cython_debug/
 *.csv
 .vscode/
 
+dataset/
 *.png
+*.html
 *.h5
 *.keras
 plots/

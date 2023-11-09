@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 from sklearn.metrics import confusion_matrix, roc_curve, auc
 
 def plot_training_history(history, model_name):
@@ -84,3 +85,38 @@ def compare_predictions(y_true, y_pred_ann, y_pred_lstm, model_names):
 
     # save the plot
     plt.savefig(f'plots/predictions_comparison.png')
+
+# plot classes distribution
+def plot_classes_distribution(y,class_mapping, model_name):
+    plt.figure(figsize=(12, 5))
+    plt.hist(y, bins=20, color='b', alpha=0.7, label=class_mapping)
+    plt.xticks(range(len(class_mapping)), class_mapping.keys(), rotation='vertical')
+    plt.xlabel('Classes')
+    plt.ylabel('Frequency')
+    plt.legend(loc='upper right')
+    plt.title(f'{model_name} Classes Distribution')
+
+    plt.tight_layout()
+    plt.show()
+
+    # save the plot
+    plt.savefig(f'plots/{model_name}_classes_distribution.png')
+
+def plot_probabilities(y_prediction_array, true_label, name):
+    predicted_label = np.argmax(y_prediction_array)
+
+    plt.figure(figsize=(6, 3))
+    plt.grid(False)
+    plt.xticks(range(10))
+    plt.yticks([])
+    thisplot = plt.bar(range(10), y_prediction_array, color="#777777")
+    plt.ylim([0, 1])
+    thisplot[predicted_label].set_color('red')
+    thisplot[true_label].set_color('blue')
+
+    plt.show()
+
+    # save the plot
+    plt.savefig(f'plots/{name}_probabilities.png')
+
+

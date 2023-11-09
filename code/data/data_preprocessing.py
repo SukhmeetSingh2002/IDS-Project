@@ -34,21 +34,33 @@ def label_encode(df, columns):
     return df
 
 
+# Clamp extreme Values
+def clamp_extreme_values(df, columns, unique_threshold=50, clamp_threshold=0.99):
+    for column in columns:
+        if df[column].max()>10*df[column].median() and df[column].max()>10 :
+                df[column] = np.where(df[column]<df[column].quantile(0.95), df[column], df[column].quantile(0.95))
+    return df
+
 
 
 
 def preprocess_data(df, multi_class=False):
     one_hot_encode_cols = ['proto','state','service']
     columns_to_remove = ['attack_cat']
+    output_columns = ['label']
     if multi_class:
         columns_to_remove.remove('attack_cat')
         columns_to_remove.append('label')
-    remaining_columns = [column for column in df.columns if column not in columns_to_remove and column not in one_hot_encode_cols]
+
+        output_columns.remove('label')
+        output_columns.append('attack_cat')
+    remaining_columns = [column for column in df.columns if column not in columns_to_remove and column not in one_hot_encode_cols and column not in output_columns]
 
 
 
     df = remove_columns(df, columns_to_remove)
     df = log_transform(df, remaining_columns)
+    df = clamp_extreme_values(df, remaining_columns, unique_threshold=1, clamp_threshold=0.95)
 
     # df = one_hot_encode(df, one_hot_encode_cols)
     df = label_encode(df, one_hot_encode_cols)

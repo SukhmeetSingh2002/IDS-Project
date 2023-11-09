@@ -26,9 +26,10 @@ def label_encode(df_training, df_testing, multi_class=False):
         le = LabelEncoder()
         df_training['attack_cat'] = le.fit_transform(df_training['attack_cat'])
         df_testing['attack_cat'] = le.transform(df_testing['attack_cat'])
+        class_mapping = dict(zip(le.classes_, le.transform(le.classes_)))
     else:
         pass
-    return df_training, df_testing
+    return df_training, df_testing, class_mapping
 
 
 def split_dataset_testing(df, multi_class=False):
@@ -52,6 +53,7 @@ def oversample_data(X_train, y_train):
 
 
 def calculate_class_weights(y_train):
+    y_train = np.argmax(y_train, axis=1)
     class_weights = class_weight.compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
     return class_weights
 

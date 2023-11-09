@@ -1,0 +1,25 @@
+Multi-class classification
+
+Multi-class classification
+
+Multi-class classification
+
+Multi-class classification
+
+Random Forest Accuracy: 0.7101612981586747
+Decision Tree Accuracy: 0.7031045037166593
+Multi-class classification
+
+Random Forest Accuracy: 0.7101612981586747
+Decision Tree Accuracy: 0.7031045037166593
+Multi-class classification
+
+Multi-class classification
+
+Multi-class classification
+
+ANN Accuracy: 0.6886994242668152
+LSTM Accuracy: 0.47383713722229004
+CNN Accuracy: 0.7732230424880981
+Random Forest Accuracy: 0.7101612981586747
+Decision Tree Accuracy: 0.7031045037166593
